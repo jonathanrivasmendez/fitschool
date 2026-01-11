@@ -1,0 +1,89 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  TEACHER
+  CENTER_MANAGER
+  ADMIN
+}
+
+enum ClassroomStatus {
+  DRAFT
+  FINALIZED
+}
+
+enum Gender {
+  MASCULINO
+  FEMENINO
+}
+
+model School {
+  centro_codigo String @id
+  nombre        String
+  classrooms    Classroom[]
+  users         User[]
+}
+
+model User {
+  id            String   @id @default(uuid())
+  dui           String   @unique
+  password_hash String
+  nombre        String
+  role          UserRole
+  centro_codigo String?
+  created_at    DateTime @default(now())
+
+  school School? @relation(fields: [centro_codigo], references: [centro_codigo])
+}
+
+model Classroom {
+  id            String          @id @default(uuid())
+  centro_codigo String
+  grado         String
+  anio          Int
+  status        ClassroomStatus
+  finalized_at  DateTime?
+
+  school    School   @relation(fields: [centro_codigo], references: [centro_codigo])
+  students  Student[]
+
+  @@unique([centro_codigo, grado, anio])
+}
+
+model Student {
+  id               String        @id @default(uuid())
+  classroom_id     String
+  mined_student_id String?       @unique
+  nombre           String
+  genero           Gender
+  edad             Int?
+  fecha_nacimiento DateTime?
+
+  classroom    Classroom    @relation(fields: [classroom_id], references: [id])
+  uniformEntry UniformEntry?
+}
+
+model UniformEntry {
+  id                   String   @id @default(uuid())
+  student_id           String   @unique
+  talla_camisa         String
+  talla_pantalon_falda String
+  talla_zapatos        String
+  updated_at           DateTime @updatedAt
+
+  student Student @relation(fields: [student_id], references: [id])
+}
+
+model AuditEvent {
+  id          String   @id @default(uuid())
+  actor_dui   String
+  action      String
+  payload_json Json
+  created_at  DateTime @default(now())
+}

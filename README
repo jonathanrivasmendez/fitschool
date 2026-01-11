@@ -1,3 +1,77 @@
-# Sistema de Asistencia Docente
+# UNIFORME ESCOLAR 2026
 
-Proyecto web para registro de asistencia escolar.
+## Stack
+- Next.js 15 (App Router)
+- TypeScript
+- Tailwind CSS
+- shadcn/ui (componentes base en `src/components/ui`)
+- PostgreSQL (Google Cloud SQL)
+- Prisma ORM
+- Deploy en Vercel
+
+## Requisitos
+- Node.js 20+
+- PostgreSQL 15+
+
+## Configuración local
+1. Instalar dependencias:
+   ```bash
+   npm install
+   ```
+
+2. Crear `.env` con:
+   ```bash
+   DATABASE_URL="postgresql://USER:PASSWORD@HOST:PORT/DB?schema=public"
+   SESSION_PASSWORD="cambia-este-valor-por-uno-seguro-de-32-chars-minimo"
+   MINED_API_BASE_URL=""
+   MINED_API_TOKEN=""
+   ```
+
+3. Ejecutar migraciones y seed:
+   ```bash
+   npx prisma migrate dev --name init
+   npx prisma db seed
+   ```
+
+4. Ejecutar en desarrollo:
+   ```bash
+   npm run dev
+   ```
+
+## Seed (credenciales demo)
+- TEACHER: DUI `07710815-0` / `demo123`
+- CENTER_MANAGER: DUI `01234567-8` / `demo123`
+- ADMIN: DUI `99999999-9` / `demo123`
+
+## Google Cloud SQL (Postgres + SSL)
+1. Crear instancia PostgreSQL en Cloud SQL.
+2. Crear base de datos y usuario.
+3. Descargar certificados SSL y habilitar conexión segura.
+4. Usar una cadena de conexión compatible con Prisma:
+   ```bash
+   postgresql://USER:PASSWORD@HOST:PORT/DB?schema=public&sslmode=require
+   ```
+
+## Deploy en Vercel
+1. Crear proyecto en Vercel y conectar el repositorio.
+2. Definir variables de entorno en Vercel:
+   - `DATABASE_URL`
+   - `SESSION_PASSWORD`
+   - `MINED_API_BASE_URL` (opcional)
+   - `MINED_API_TOKEN` (opcional)
+3. Ejecutar migraciones en producción:
+   ```bash
+   npx prisma migrate deploy
+   npx prisma db seed
+   ```
+4. Vercel detecta Next.js automáticamente. Ejecutar build:
+   ```bash
+   npm run build
+   ```
+
+## Scripts
+- `npm run dev` - desarrollo
+- `npm run build` - build de producción
+- `npm run start` - servidor de producción
+- `npm run prisma:migrate` - migraciones
+- `npm run prisma:seed` - seed
